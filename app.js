@@ -1,18 +1,28 @@
+/*
+      _    ____  ____  
+     / \  |  _ \|  _ \ 
+    / _ \ | |_) | |_) |
+   / ___ \|  __/|  __/ 
+  /_/   \_\_|   |_|    
+*/
+
 'use strict'
 
+//! Dependencias
 var express = require('express');
 var bodyParser = require('body-parser');
 
 var app = express();
 
-//Cargar Rutas
+//! Cargar Rutas
 var user_routes = require('./routes/user');
+var product_routes = require('./routes/product');
 
-//Middlewares
+//! Middlewares
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
-//CORS
+//! CORS
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
@@ -21,8 +31,9 @@ app.use((req, res, next) => {
     next();
 });
 
-//RUTAS
+//! RUTAS
 app.use('/', user_routes);
+app.use('/', product_routes);
 
-//Exportar
+//! Exportar
 module.exports = app;

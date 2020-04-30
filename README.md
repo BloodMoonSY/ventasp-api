@@ -10,9 +10,9 @@
 
 API restful, aplicacion con modulos para registrar productos, hacer compras, ventas, graficas, recivos, facturas y más. Si usted desea una aplicación a su medida favor de contactarme a mi correo:
 
-#### luisfernandovq@outlook.com
+### luisfernandovq@outlook.com
 o
-#### luisfdovq@gmail.com
+### luisfdovq@gmail.com
 
 para hacer un presupuesto de acuerdo a sus necesidades.
 
