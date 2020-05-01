@@ -17,6 +17,7 @@ var app = express();
 //! Cargar Rutas
 var user_routes = require('./routes/user');
 var product_routes = require('./routes/product');
+var category_routes = require('./routes/category');
 
 //! Middlewares
 app.use(bodyParser.urlencoded({extended:false}));
@@ -34,6 +35,7 @@ app.use((req, res, next) => {
 //! RUTAS
 app.use('/', user_routes);
 app.use('/', product_routes);
+app.use('/', category_routes);
 
 //! Exportar
 module.exports = app;

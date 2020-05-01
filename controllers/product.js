@@ -93,8 +93,7 @@ function getProducts(req, res){
     //* Establecemos el limite de paginas por vista
     var itemsPerPage = 4;
 
-
-        Product.find({}).sort('-created_at').populate('user').paginate(page, itemsPerPage, (err, products, total)=>{
+    Product.find({}, {__v:0}).sort('-created_at').populate('user').paginate(page, itemsPerPage, (err, products, total)=>{
 
         //! Capturamos los errores
         if(err) return res.status(500).send({message: 'Error en el servidor'});
