@@ -25,8 +25,10 @@ var md_upload = multipart({ uploadDir: './uploads/products'});
 //! Rutas
 api.get('/ptest', md_auth.ensureAuth, ProductController.Ptest);
 api.post('/addprod', md_auth.ensureAuth, ProductController.nuevoProducto);
-api.get('/products/:page?', md_auth.ensureAuth, ProductController.getProducts);
-api.get('/my-products', md_auth.ensureAuth, ProductController.getMyProducts);
+api.get('/products/:page?', md_auth.ensureAuth, ProductController.getProducts); //* Todos los productos
+api.get('/product/:id', md_auth.ensureAuth, ProductController.getProduct); //* Producto en especifico
+api.get('/user-products/:page', md_auth.ensureAuth, ProductController.getUserProducts);
+api.get('/my-products/:page?', md_auth.ensureAuth, ProductController.getMyProducts); //* Ver nuestros productos
 api.delete('/product/:id', md_auth.ensureAuth, ProductController.deleteProduct);
 api.put('/product/:id', md_auth.ensureAuth, ProductController.updateProduct);
 api.post('/upload-image-product/:id', [md_auth.ensureAuth, md_upload], ProductController.uploadImage);

@@ -63,7 +63,7 @@ function saveUser (req, res){
 
                     ]}).exec((err, users)=>{
 
-                        if(err) return res.status(500).send({message: 'Error en la peticion de usuarios'});
+                        if(err) return res.status(500).send({message: 'Error en la peticion de usuarios', users});
 
                         if(users && users.length >= 1){
                             return res.status(200).send({message: 'El usuario que intentas registar ya existe'});

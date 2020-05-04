@@ -18,6 +18,9 @@ var app = express();
 var user_routes = require('./routes/user');
 var product_routes = require('./routes/product');
 var category_routes = require('./routes/category');
+var currency_routes = require('./routes/currency');
+// var purchase_routes = require('./routes/purchase');
+var paymentmethod_routes = require('./routes/paymentmethod');
 
 //! Middlewares
 app.use(bodyParser.urlencoded({extended:false}));
@@ -36,6 +39,9 @@ app.use((req, res, next) => {
 app.use('/', user_routes);
 app.use('/', product_routes);
 app.use('/', category_routes);
+app.use('/', currency_routes);
+// app.use('/', purchase_routes);
+app.use('/', paymentmethod_routes);
 
 //! Exportar
 module.exports = app;

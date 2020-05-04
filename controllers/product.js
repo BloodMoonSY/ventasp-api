@@ -9,9 +9,7 @@
 'use strict'
 
 //! Dependencias
-var bcrypt = require('bcrypt-nodejs');
-var mongoosePeginate = require('mongoose-pagination');
-var jwt = require('../services/jwt');
+var mongoosePaginate = require('mongoose-pagination');
 var fs = require('fs');
 var path = require('path');
 var moment = require('moment');
@@ -56,6 +54,7 @@ function nuevoProducto(req, res) {
         producto.characteristic = params.characteristic;
         producto.another_characteristic = params.another_characteristic;
         producto.user = req.user.sub;
+        producto.category = params.category;
         producto.created_at = moment().unix();
         producto.file = 'null';
 
@@ -93,7 +92,7 @@ function getProducts(req, res){
     //* Establecemos el limite de paginas por vista
     var itemsPerPage = 4;
 
-    Product.find({}, {__v:0}).sort('-created_at').populate('user').paginate(page, itemsPerPage, (err, products, total)=>{
+    Product.find({}, {__v:0}).sort('-created_at').populate('user', 'name surname nick email phone country image').paginate(page, itemsPerPage, (err, products, total)=>{
 
         //! Capturamos los errores
         if(err) return res.status(500).send({message: 'Error en el servidor'});
@@ -116,21 +115,91 @@ function getProducts(req, res){
 //TODO: Metodo permite listar nuestros productos
 function getMyProducts(req, res){
 
-    //* Obtenemos nuestro ID
+    //* Iniciamos la pagina siempre en 1
+    var page = 1;
+
+    //* Le decimos que si viene el parametro pagina le asignamos 1
+    if(req.params.page){
+        page = req.params.page;
+    }
+    
+    //* Obetenemos el Id del usuario
     var userId = req.user.sub;
 
-    //* Iniciamos consulta pasandole nuestro ID
-    var find = Product.find({user: userId});
+    if(req.params.user){
+        userId = req.params.user;
+    }
 
-    //* Filtramos la busqueda donde el usuario seamos nosotros
-    find.populate('user').exec((err, productos) => {
+    var itemsPerPage = 4;
+
+    Product.find({user: userId}).sort('-create_at').paginate(page, itemsPerPage, (err, products ,total) => {
+        
+        if(err) return res.status(500).send({message: 'Error al devolver productos'});
+
+        if(!products) return res.status(404).send({message: 'No hay productos'});
+
+        return res.status(200).send({
+            total_items: total,
+            pages: Math.ceil(total/itemsPerPage),
+            page: page,
+            items_per_page: itemsPerPage,
+            products
+        });
+    });
+}
+
+//? Metodo productos de otro usuario
+//TODO: Mostrar los productos de un usuario
+function getUserProducts(req, res){
+
+    var params = req.body;
+
+    var page = 1;
+    if(req.params.page){
+        page = req.params.page;
+    }
+    
+    var userId = params.iduser;
+
+    if(req.params.user){
+        userId = req.params.id;
+    }
+
+    var itemsPerPage = 4;
+
+    Product.find({user: userId}).sort('-create_at').paginate(page, itemsPerPage, (err, products ,total) => {
+        
+        if(err) return res.status(500).send({message: 'Error al devolver productos'});
+
+        if(!products) return res.status(404).send({message: 'No hay productos'});
+
+        return res.status(200).send({
+            total_items: total,
+            pages: Math.ceil(total/itemsPerPage),
+            page: page,
+            items_per_page: itemsPerPage,
+            products
+        });
+    });
+
+}
+
+//? Metodo Publicacion x1
+//TODO: Metodo para obtener solo una publicacion
+function getProduct(req, res){
+
+    //* Obtenemos el Id del Producto
+    var productId = req.params.id;
+
+    //* Buscamos el producto por el Id
+    Product.findOne({_id: productId}, {__v: 0}).exec((err, productFinded) =>{
 
         //! Capturamos los errores
         if(err) return res.status(500).send({message: 'Error en el servidor'});
-        if(!productos) return res.status(404).send({message: 'No tienes productos'});
+        if(!productFinded) return res.status(404).send({message: 'No se encuentra el producto que estas buscando'});
 
-        //* Mostrar nuestros productos
-        return res.status(200).send({productos});
+        //* Retornamos el producto
+        return res.status(200).send({product: productFinded});
 
     });
 }
@@ -279,7 +348,9 @@ module.exports = {
     Ptest,
     nuevoProducto,
     getProducts,
+    getProduct,
     getMyProducts,
+    getUserProducts,
     deleteProduct,
     updateProduct,
     uploadImage,

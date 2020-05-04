@@ -21,6 +21,7 @@ var ProductSchema = Schema({
      stock: Number,
      characteristic: String,
      another_characteristic: String,
+     category: Array,
      user: {type: Schema.ObjectId, ref: 'User'}
 });
 
