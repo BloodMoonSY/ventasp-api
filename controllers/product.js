@@ -17,6 +17,7 @@ var moment = require('moment');
 //! Modelos
 let User = require('../models/user');
 let Product = require('../models/product');
+var Category = require('../models/category');
 
 
 /*
@@ -44,6 +45,7 @@ function nuevoProducto(req, res) {
 
         //* Instanciamos el modelo
         var producto = new Product();
+        
 
         //* Emparejamos datos del formulario con los del modelo
         producto.name = params.name;
@@ -58,22 +60,21 @@ function nuevoProducto(req, res) {
         producto.created_at = moment().unix();
         producto.file = 'null';
 
-        //* Guardamos el Producto
-        producto.save((err, productStored)=>{
+        producto.save((err, productoStored)=>{
 
-            //! Capturamos errores
-            if(err) return res.status(500).send({message: 'Error en el servidor', productStored});
-            if(!productStored) return res.status(404).send({message: 'El producto no se ha guardado'});
+            if(err) return res.status(500).send({message: 'Error en el servidor', producto: err});
+            if(!productoStored) return res.status(404).send({message: 'No se ha podido guardar el producto'});
 
-            //* Guardamos el producto
-            return res.status(200).send({producto: productStored});
-
+            var cat = [params.category];
+            cat.forEach((Element => console.log(Element)));
+            console.log(cat.length);
+            // return res.status(200).send({producto: productoStored});
         });
+        
     }else{
 
         //* Hay campos vacios
         return  res.status(200).send({message: 'Hay campos vacios', params});
-        console.log('parametros: ', params);
     }
 }
 
@@ -92,12 +93,12 @@ function getProducts(req, res){
     //* Establecemos el limite de paginas por vista
     var itemsPerPage = 4;
 
-    Product.find({}, {__v:0}).sort('-created_at').populate('user', 'name surname nick email phone country image').paginate(page, itemsPerPage, (err, products, total)=>{
+    Product.find({}, {__v: 0}).populate([{path: 'user', populate: {path: 'user'}},{path: 'category', populate: {path: 'category'}}]).sort('-created_at').paginate(page, itemsPerPage, (err, products, total)=>{
 
         //! Capturamos los errores
         if(err) return res.status(500).send({message: 'Error en el servidor'});
         if(!products) return res.status(404).send({message: 'No hay productos disponibles'});
-
+        
         //* Cuando si existen productos
         return res.status(200).send({
 
@@ -132,7 +133,7 @@ function getMyProducts(req, res){
 
     var itemsPerPage = 4;
 
-    Product.find({user: userId}).sort('-create_at').paginate(page, itemsPerPage, (err, products ,total) => {
+    Product.find({user: userId}).sort('-create_at').populate('products.category').paginate(page, itemsPerPage, (err, products ,total) => {
         
         if(err) return res.status(500).send({message: 'Error al devolver productos'});
 
